@@ -26,6 +26,7 @@ public class RequestHandler {
         try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
              BufferedWriter bwr = new BufferedWriter(new OutputStreamWriter(outputStream))) {
             String s = br.readLine();
+
             if (s.contains("GET")) {
                 final String content = getContent();
                 bwr.write("HTTP/1.1 200 OK\r\n");
@@ -36,7 +37,8 @@ public class RequestHandler {
             } else {
                 bwr.write("HTTP/1.1 404 NotFound\r\n");
             }
-        } catch (IOException e) {
+        } catch (IOException | NullPointerException e) {
+            System.out.println("Проблемы с чтением из ресурсов");
             e.printStackTrace();
         }
     }
@@ -63,6 +65,9 @@ public class RequestHandler {
     private String writeDirectory(File dir) {
         final StringBuilder stringBuilder = new StringBuilder();
         final File[] files = dir.listFiles();
+        if (files == null) {
+            throw new NullPointerException("В директории нет файлов");
+        }
         for (File file : files) {
             stringBuilder
                     .append("<pre>")
